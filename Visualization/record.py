@@ -36,13 +36,30 @@ class Record:
             wf.setsampwidth(p.get_sample_size(FORMAT))
             wf.setframerate(RATE)
             wf.writeframes(b''.join(frames))
-            print(songname)
+            # print(songname)
             t2 = threading.Thread(target=predict.predict, args=(songname,window))
             t2.start()
+
+    def play(self):
+        wf = wave.open('output.wav', 'rb')
+        pa = pyaudio.PyAudio()
+        stream = p.open(format =
+                p.get_format_from_width(wf.getsampwidth()),
+                channels = wf.getnchannels(),
+                rate = wf.getframerate(),
+                output = True)
+        data = wf.readframes(CHUNK)
+        while data != '':
+        # writing to the stream is what *actually* plays the sound.
+            stream.write(data)
+        data = wf.readframes(CHUNK)
+        stream.close()    
+        pa.terminate()
+
     
     def close(self):
         """Close all open streams/files"""
-        global stream, p, wf
+        global stream, p#, wf
         stream.stop_stream()
         stream.close()
         p.terminate()

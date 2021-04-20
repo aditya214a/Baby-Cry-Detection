@@ -5,7 +5,7 @@ global stop
 stop = False
 
 window = None
-
+progress_bar = None
 
 def make_window():
     global window
@@ -18,8 +18,8 @@ def make_window():
             sg.Button('Clear', button_color=('white', '#9B0023'),key="Reset"),
             sg.Button('Exit', button_color=('white', '#00406B'))],
             [sg.ProgressBar(5, orientation='h', size=(71, 10), key='-PROGRESS BAR-')],
-            [sg.Text(text="Predicting..",key="output")],
-            [sg.Output(size=(130,15), font='Courier 8', key = '_output_')]]
+            [sg.Text(text="Predicting..",key="output")],]
+            # [sg.Output(size=(130,15), font='Courier 8', key = '_output_')]]
 
     window = sg.Window("Baby cry detection",
                     layout,
@@ -84,7 +84,7 @@ def main():
             pbu = threading.Thread(target=progress_bar_update,args=(window,))
             pbu.start()
         elif event == 'Reset':
-            window.FindElement('_output_').Update('')
+            # window.FindElement('_output_').Update('')
             if stop==True:
                 progress_bar.UpdateBar(0)
 
