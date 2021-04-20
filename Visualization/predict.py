@@ -11,7 +11,7 @@ class Predict:
     def __init__(self):
         self.model = load_model('../ff_nn_v1_Ac85.h5')
 
-    def predict(self,name):
+    def predict(self,name,window):
         # global model
         #Doing prediction
         cmap = plt.get_cmap('inferno')
@@ -54,7 +54,11 @@ class Predict:
         live_data = live_data.drop(['filename'],axis=1)
         Xnew = np.array([live_data.iloc[0][0:26]])
         ynew = self.model.predict_classes(Xnew)
-        ynew = 1
+        # ynew = 1
         print(ynew)
-        ynew = 'Crying sound is detected' if ynew==0 else 'No crying sound is detected'
+        ynew = 'The prediction: Crying sound is detected' if ynew==0 else 'The prediction: No crying sound is detected'
         window['output'].update(value = ynew, visible = True)
+    
+    def close():
+        pass
+
