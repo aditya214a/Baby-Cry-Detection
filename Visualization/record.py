@@ -40,23 +40,27 @@ class Record:
             t2 = threading.Thread(target=predict.predict, args=(songname,window))
             t2.start()
 
-    def play(self):
+    def play(self,stop):
         wf = wave.open('output.wav', 'rb')
         pa = pyaudio.PyAudio()
-        stream = p.open(format =
-                p.get_format_from_width(wf.getsampwidth()),
-                channels = wf.getnchannels(),
-                rate = wf.getframerate(),
-                output = True)
+        stream_output = p.open(format=FORMAT,
+                channels=CHANNELS,
+                rate=RATE,
+                input=False,
+                output=True,
+                frames_per_buffer=CHUNK)
         data = wf.readframes(CHUNK)
         while data != '':
         # writing to the stream is what *actually* plays the sound.
-            stream.write(data)
-        data = wf.readframes(CHUNK)
-        stream.close()    
+            stream_output.write(data)
+            data = wf.readframes(CHUNK)
+            if stop():
+                print("returning")
+                break
+        stream_output.stop_stream()
+        stream_output.close()    
         pa.terminate()
 
-    
     def close(self):
         """Close all open streams/files"""
         global stream, p#, wf

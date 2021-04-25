@@ -14,12 +14,13 @@ def make_window():
 
     layout = [[sg.Button('Start Recording', button_color=('white', 'black')),
             sg.Button('Continuous Detection', button_color=('black', 'springgreen4')),
+            sg.Button('PLay last recorded song', button_color=('black', 'springgreen4'), key="play"),
             sg.Button('Stop', button_color=('gray50', 'black')),
             sg.Button('Clear', button_color=('white', '#9B0023'),key="Reset"),
             sg.Button('Exit', button_color=('white', '#00406B'))],
             [sg.ProgressBar(5, orientation='h', size=(71, 10), key='-PROGRESS BAR-')],
-            [sg.Text(text="Predicting..",key="output")],]
-            # [sg.Output(size=(130,15), font='Courier 8', key = '_output_')]]
+            [sg.Text(text="Predicting..",key="output")],
+            [sg.Output(size=(130,15), font='Courier 8', key = '_output_')]]
 
     window = sg.Window("Baby cry detection",
                     layout,
@@ -67,15 +68,18 @@ def main():
                 print(key, ' = ',values[key])
             r.close()
             break
+
         elif event == 'Start Recording':
             stop = False
             pbu = threading.Thread(target=progress_bar_update,args=(window,))
             t1 = threading.Thread(target=r.record, args=(window,lambda : stop,))#, j))
             t1.start()
             pbu.start()
+
         elif event == 'Stop':
             print("[LOG] Clicked Stop button!")
             stop = True
+
         elif event == 'Continuous Detection':
             print("Continous detection has started")
             stop = False
@@ -83,10 +87,18 @@ def main():
             cd.start()
             pbu = threading.Thread(target=progress_bar_update,args=(window,))
             pbu.start()
+
         elif event == 'Reset':
-            # window.FindElement('_output_').Update('')
+            window.FindElement('_output_').Update('')
             if stop==True:
                 progress_bar.UpdateBar(0)
+
+        elif event == 'play':
+            stop = False
+            play_thread = threading.Thread(target=r.play,args=(lambda : stop,))
+            pbu = threading.Thread(target=progress_bar_update,args=(window,))
+            play_thread.start()
+            pbu.start()
 
         else:
             for key in values:
