@@ -1,26 +1,34 @@
 import PySimpleGUI as sg
 import time, threading
-
+import images_Base64 as images
 global stop
 stop = False
 
 window = None
 progress_bar = None
-
 def make_window():
     global window
     sg.theme('Dark')
     sg.set_options(element_padding=(10, 10))
 
-    layout = [[sg.Button('Start Recording', button_color=('white', 'black')),
-            sg.Button('Continuous Detection', button_color=('black', 'springgreen4')),
-            sg.Button('PLay last recorded song', button_color=('black', 'springgreen4'), key="play"),
-            sg.Button('Stop', button_color=('gray50', 'black')),
-            sg.Button('Clear', button_color=('white', '#9B0023'),key="Reset"),
-            sg.Button('Exit', button_color=('white', '#00406B'))],
-            [sg.ProgressBar(5, orientation='h', size=(71, 10), key='-PROGRESS BAR-')],
+    # layout = [[sg.Button('Start Recording', button_color=('white', 'black')),
+    #         sg.Button('Continuous Detection', button_color=('black', 'springgreen4')),
+    #         sg.Button('PLay last recorded song', button_color=('black', 'springgreen4'), key="play"),
+    #         sg.Button('Stop', button_color=('gray50', 'black')),
+    #         sg.Button('Clear', button_color=('white', '#9B0023'),key="Reset"),
+    #         sg.Button('Exit', button_color=('white', '#00406B'))],
+    #         [sg.ProgressBar(5, orientation='h', size=(71, 10), key='-PROGRESS BAR-')],
+    #         [sg.Text(text="Predicting..",key="output")],
+    #         [sg.Output(size=(130,15), font='Courier 8', key = '_output_')]]
+    layout = [[sg.Button(image_data=images.start_recording2, key='Start Recording'),
+            sg.Button(image_data=images.stop, key='Continuous Detection'),
+            sg.Button(image_data=images.play, key='play'),
+            sg.Button(image_data=images.stop5, key='Stop'),
+            sg.Button(image_data=images.clear, key="Reset"),
+            sg.Button(image_data=images.exit, key='Exit')],
+            [sg.ProgressBar(5, orientation='h', size=(41, 10), key='-PROGRESS BAR-')],
             [sg.Text(text="Predicting..",key="output")],
-            [sg.Output(size=(130,15), font='Courier 8', key = '_output_')]]
+            [sg.Output(size=(73,15), font='Courier 8', key = '_output_')]]
 
     window = sg.Window("Baby cry detection",
                     layout,
