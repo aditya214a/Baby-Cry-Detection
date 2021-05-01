@@ -36,7 +36,7 @@ class Record:
             wf.setsampwidth(p.get_sample_size(FORMAT))
             wf.setframerate(RATE)
             wf.writeframes(b''.join(frames))
-            # print(songname)
+            print("DONE RECORDING")
             t2 = threading.Thread(target=predict.predict, args=(songname,window))
             t2.start()
 
