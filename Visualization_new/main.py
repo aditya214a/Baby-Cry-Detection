@@ -4,11 +4,13 @@ import images_Base64 as images
 global stop
 from record import Record
 
+# Global variables
 # window = None
 draw = None
 cry_id = None
 continous_detection = None
 ids = []
+progress_bar_id = None
 
 def cry_toggle(cry=1):
     global cry_id
@@ -48,15 +50,9 @@ def make_window():
     return window,draw
 
 def progress_bar_update(window):
-    print("progressing...")
-    global ids
-    print(ids)
-    for id in ids:
-        id=ids.pop()
-        draw.DeleteFigure(id)
     for i in range(5):
         time.sleep(1)
-        ids.append(draw.DrawImage(filename=r'images\images\progress_bar.png', location=(608+65*i,233)))
+        draw.RelocateFigure(progress_bar_id, 608+65*i, 233)
         if stop==True:
             break
 
@@ -78,7 +74,7 @@ def continous_detect(window,r):
         pbu.start()
 
 def main():
-    global stop, progress_bar, continous_detection
+    global stop, progress_bar, continous_detection, progress_bar_id
     continous_detection = False
     stop = True
     window,draw = make_window()
@@ -87,6 +83,7 @@ def main():
     eve = None
     window.read()
     id=draw.DrawImage(data=images.ML_Demo_UI_2, location=(0,0))
+    progress_bar_id = draw.DrawImage(filename=r'images\images\progress_bar.png', location=(1200,1200))
     while True:
         event, values = window.read()
         if event in (sg.WIN_CLOSED, 'Exit'):
@@ -140,5 +137,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-    for thread in threading.enumerate(): 
+    print("\n\nThreads:")
+    for thread in threading.enumerate():
         print(thread.name)
