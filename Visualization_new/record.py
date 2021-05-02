@@ -28,7 +28,7 @@ class Record:
             data = stream.read(CHUNK)
             frames.append(data)
             if stop():
-                print("returning")
+                # print("returning")
                 break
         else:
             wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
@@ -36,7 +36,7 @@ class Record:
             wf.setsampwidth(p.get_sample_size(FORMAT))
             wf.setframerate(RATE)
             wf.writeframes(b''.join(frames))
-            print("DONE RECORDING")
+            # print("DONE RECORDING")
             t2 = threading.Thread(target=predict.predict, args=(songname,window))
             t2.start()
 
@@ -55,7 +55,7 @@ class Record:
             stream_output.write(data)
             data = wf.readframes(CHUNK)
             if stop():
-                print("returning")
+                # print("returning")
                 break
         stream_output.stop_stream()
         stream_output.close()    

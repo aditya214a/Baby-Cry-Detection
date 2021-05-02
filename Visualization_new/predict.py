@@ -65,7 +65,7 @@ class Predict:
         #     print('Cry')
         # else:
         #     print('No cry')
-        ynew = 0
+        ynew = 1
         window.cry_toggle(ynew)
         # window['output'].update(value = ynew, visible = True)
 

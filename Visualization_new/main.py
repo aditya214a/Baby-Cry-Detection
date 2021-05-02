@@ -1,139 +1,140 @@
 import PySimpleGUI as sg
-import time, threading
+import time
+import threading
 import images_Base64 as images
-global stop
 from record import Record
 
 # Global variables
-# window = None
+window = None
 draw = None
-cry_id = None
+cry_ids = [None, None]  # No Cry, Cry
 continous_detection = None
-ids = []
-progress_bar_id = None
+stop = False
+pred_text_id = None
 
-def cry_toggle(cry=1):
-    global cry_id
-    print("cry_id : ",cry_id)
+
+def cry_toggle(cry=None):
+    """
+        Display the picture on the left side of the screen for the predicted result.
+    """
     # 0 = cry
+    for i in cry_ids:
+        draw.DeleteFigure(i)
     if cry == 1:
-        if not cry_id == None:
-            draw.DeleteFigure(cry_id)
-            cry_id = None
+        cry_ids[1] = draw.DrawImage(
+            filename=r'images\UI_V2_1080p\calm_ui.png', location=(260, 260))
     elif cry == 0:
-        if cry_id == None:
-            cry_id=draw.DrawImage(filename=r'images\images\cry_ui.png', location=(100,100))
+        cry_ids[0] = draw.DrawImage(
+            filename=r'images\UI_V2_1080p\cry_ui.png', location=(260, 260))
+
+
+def predicting(pred=True, cont_detec=False):
+    global pred_text_id, continous_detection
+    stop = not pred
+    continous_detection = (cont_detec and pred)
+    print("F=predicting: continous_detection: ", continous_detection)
+    if pred_text_id == None and stop == False:
+        pred_text_id = draw.DrawImage(
+            filename=r'images\UI_V2_1080p\predicting.png', location=(1360, 250))
+    elif not pred_text_id == None and stop == True:
+        draw.DeleteFigure(pred_text_id)
+        pred_text_id = None
 
 
 def make_window():
-    # global window
-    global draw
-    stop = False
+    global draw, stop, cry_ids, window, continous_detection
 
-    layout = [[sg.Graph(background_color='White', canvas_size=(1024, 768),
-          graph_bottom_left=(0,768), key='Graph', pad=(0,0), enable_events=True,
-          graph_top_right=(1024, 0))]]#, drag_submits=True)]]
-    
+    layout = [[sg.Graph(background_color='White', canvas_size=(1920, 1080),
+                        graph_bottom_left=(0, 1080), key='Graph', pad=(0, 0), enable_events=True,
+                        graph_top_right=(1920, 0))]]  # , drag_submits=True)]]
+
     window = sg.Window("Baby cry detection",
-                    layout,
-                    default_element_size=(12, 1),
-                    text_justification='r',
-                    auto_size_text=False,
-                    auto_size_buttons=False,
-                    grab_anywhere=True,
-                    default_button_element_size=(20, 2),
-                    element_padding=(0,0),)
-                    # no_titlebar = True)
-                    # auto_close_duration = 600)
+                       layout,
+                       default_element_size=(12, 1),
+                       text_justification='r',
+                       auto_size_text=False,
+                       auto_size_buttons=False,
+                       default_button_element_size=(20, 2),
+                       # grab_anywhere=True,
+                       #    no_titlebar = True,
+                       # auto_close_duration = 600,
+                       margins=(0, 0),
+                       element_padding=(0, 0),).Finalize()
     draw = window['Graph']
-    window.cry_toggle = cry_toggle
-    return window,draw
+    id = draw.DrawImage(
+        filename=r'images\UI_V2_1080p\Waiting.png', location=(0, 0))
+    window.Maximize()
+    window.bind("<Escape>", "-ESCAPE-")
+    window.Finalize()
 
-def progress_bar_update(window):
-    for i in range(5):
-        time.sleep(1)
-        draw.RelocateFigure(progress_bar_id, 608+65*i, 233)
-        if stop==True:
-            break
+    window.cry_toggle = cry_toggle
+    return window, draw
+
 
 def reset_all():
-    stop = True
-    continous_detection = False
+    predicting(False)
     cry_toggle()
-    for i in ids:
-        draw.DeleteFigure(i)
 
-def continous_detect(window,r):
-    continous_detection = True
-    print(stop,continous_detection)
-    while stop==False and continous_detection == True:
+
+def continous_detect(window, r):
+    predicting(True, True)
+    print("stop: ", stop, "; continous_detection: ", continous_detection)
+    while stop == False and continous_detection == True:
         print("Continuous Recording iterating")
-        r.record(window,lambda : stop)
-        print("ids: ",ids)
-        pbu = threading.Thread(target=progress_bar_update,args=(window,))
-        pbu.start()
+        r.record(window, lambda: stop)
+
+
+def single_detect(window,r):
+    predicting(True)
+    r.record(window, lambda: stop)
+    predicting(False)
+    
 
 def main():
-    global stop, progress_bar, continous_detection, progress_bar_id
-    continous_detection = False
-    stop = True
-    window,draw = make_window()
-    print("record!!!")
+    predicting(False)
+    window, draw = make_window()
+    print("Window Ready!!!")
     r = Record()
-    eve = None
-    window.read()
-    id=draw.DrawImage(data=images.ML_Demo_UI_2, location=(0,0))
-    progress_bar_id = draw.DrawImage(filename=r'images\images\progress_bar.png', location=(1200,1200))
     while True:
+        print("Ready to read events")
         event, values = window.read()
-        if event in (sg.WIN_CLOSED, 'Exit'):
+        if event in (sg.WIN_CLOSED, 'Exit', '-ESCAPE-'):
             print('============ Event = ', event, ' ==============')
             print('-------- Values Dictionary (key=value) --------')
             for key in values:
-                print(key, ' = ',values[key])
+                print(key, ' = ', values[key])
             r.close()
             break
 
         elif event == "Graph":
-            x=values['Graph'][0]
-            y=values['Graph'][1]
-            if 389<y<513:
-                if 583<x<689:
-                    print("Recording")
-                    stop = False
-                    continous_detection = False
-                    pbu = threading.Thread(target=progress_bar_update,args=(window,))
-                    t1 = threading.Thread(target=r.record, args=(window,lambda : stop,))#, j))
-                    t1.start()
-                    pbu.start()
-                elif 689<x<844:
+            x = values['Graph'][0]
+            y = values['Graph'][1]
+            print("Graph: ", values["Graph"])
+            if 500 < y < 670:
+                if 1060 < x < 1215:
+                    print("Predicting: Single detection")
+                    sd = threading.Thread(target=single_detect, args=(window, r))
+                    sd.start()
+                elif 1215 < x < 1440:
+                    print("Predicting: Continuous detection")
+                    cd = threading.Thread(
+                        target=continous_detect, args=(window, r,))
+                    cd.start()
+                elif 1440 < x < 1645:
+                    predicting(False)
                     print("Stop recording")
                     print("[LOG] Clicked Stop button!")
-                    stop = True
-                elif 844<x<950:
+                elif 1645 < x < 1797:
                     print("Playback")
-                    stop = False
-                    play_thread = threading.Thread(target=r.play,args=(lambda : stop,))
-                    pbu = threading.Thread(target=progress_bar_update,args=(window,))
+                    predicting(False)
+                    play_thread = threading.Thread(
+                        target=r.play, args=(lambda: stop,))
                     play_thread.start()
-                    pbu.start()
-            elif 560<y<632 and 636<x<896:
-                print("continuous detection")
-                stop = False
-                continous_detection = True
-                cd = threading.Thread(target=continous_detect, args=(window,r,))
-                cd.start()
-                pbu = threading.Thread(target=progress_bar_update,args=(window,))
-                pbu.start()
 
-            elif 0<y<71 and 905<x<1023:
-                r.close()
-                break
-            elif 650<y<760 and 554<x<1018:
+            elif 747 < y < 843 and 1311 < x < 1564:
                 reset_all()
-        else:
-            for key in values:
-                print(key, ' = ',values[key])
+    window.close()
+
 
 if __name__ == '__main__':
     main()
