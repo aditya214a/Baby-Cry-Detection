@@ -40,7 +40,7 @@ class Record:
             t2 = threading.Thread(target=predict.predict, args=(songname,window))
             t2.start()
 
-    def play(self,stop):
+    def play(self):
         wf = wave.open('output.wav', 'rb')
         pa = pyaudio.PyAudio()
         stream_output = p.open(format=FORMAT,
@@ -54,9 +54,9 @@ class Record:
         # writing to the stream is what *actually* plays the sound.
             stream_output.write(data)
             data = wf.readframes(CHUNK)
-            if stop():
-                # print("returning")
-                break
+            # if stop():
+            #     # print("returning")
+            #     break
         stream_output.stop_stream()
         stream_output.close()    
         pa.terminate()

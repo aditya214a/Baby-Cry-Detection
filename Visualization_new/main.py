@@ -9,25 +9,28 @@ window = None
 draw = None
 cry_ids = [None, None]  # No Cry, Cry
 continous_detection = None
-stop = False
+stop_prediction = False
 pred_text_id = None
 
 
 def predicting_ring_animation(draw):
-    global stop
-    frames = [('0.png', 2), ('2.png', 9), ('11.png', 4), ('15.png', 6),
-              ('21.png', 4), ('25.png', 6), ('31.png',
-                                             4), ('35.png', 7), ('42.png', 3),
-              ('45.png', 6), ('51.png', 4), ('55.png',
-                                             6), ('61.png', 4), ('65.png', 7),
-              ('72.png', 3), ('75.png', 6), ('81.png', 4), ('85.png', 10), ]
+    global stop_prediction
+    predicting_ring_id = [None, None]
+    pr_id = 0
+    frames = [('0.png', 2), ('2.png', 9), ('11.png', 4), ('15.png', 6), ('21.png', 4), ('25.png', 6), ('31.png', 4), ('35.png', 7), ('42.png', 3),
+              ('45.png', 6), ('51.png', 4), ('55.png', 6), ('61.png', 4), ('65.png', 7), ('72.png', 3), ('75.png', 6), ('81.png', 4), ('85.png', 10), ]
     while True:
         for i in frames:
-            predicting_ring_id = draw.DrawImage(
+            predicting_ring_id[pr_id] = draw.DrawImage(
                 filename="images\\UI_V2_1080p\\predicting_ring\\"+str(i[0]), location=(1283, 114))
             time.sleep(0.02*i[1])
-            draw.DeleteFigure(predicting_ring_id)
-        if stop == True:
+            pr_id = int(not pr_id)
+            draw.DeleteFigure(predicting_ring_id[pr_id])
+            if stop_prediction == True:
+                break
+        if stop_prediction == True:
+            draw.DeleteFigure(predicting_ring_id[0])
+            draw.DeleteFigure(predicting_ring_id[1])
             break
 
 
@@ -47,20 +50,20 @@ def cry_toggle(cry=None):
 
 
 def predicting(pred=True, cont_detec=False):
-    global pred_text_id, continous_detection,stop
-    stop = not pred
+    global pred_text_id, continous_detection, stop_prediction
+    stop_prediction = not pred
     continous_detection = (cont_detec and pred)
     print("F=predicting: continous_detection: ", continous_detection)
-    if pred_text_id == None and stop == False:
+    if pred_text_id == None and stop_prediction == False:
         pred_text_id = draw.DrawImage(
             filename=r'images\UI_V2_1080p\predicting.png', location=(1360, 250))
-    elif not pred_text_id == None and stop == True:
+    elif not pred_text_id == None and stop_prediction == True:
         draw.DeleteFigure(pred_text_id)
         pred_text_id = None
 
 
 def make_window():
-    global draw, stop, cry_ids, window, continous_detection
+    global draw, stop_prediction, cry_ids, window, continous_detection
 
     layout = [[sg.Graph(background_color='White', canvas_size=(1920, 1080),
                         graph_bottom_left=(0, 1080), key='Graph', pad=(0, 0), enable_events=True,
@@ -74,7 +77,7 @@ def make_window():
                        auto_size_buttons=False,
                        default_button_element_size=(20, 2),
                        # grab_anywhere=True,
-                       #    no_titlebar = True,
+                       no_titlebar = True,
                        # auto_close_duration = 600,
                        margins=(0, 0),
                        element_padding=(0, 0),).Finalize()
@@ -104,15 +107,15 @@ def reset_all():
 
 def continous_detect(window, r):
     predicting(True, True)
-    print("stop: ", stop, "; continous_detection: ", continous_detection)
-    while stop == False and continous_detection == True:
+    print("stop_prediction: ", stop_prediction, "; continous_detection: ", continous_detection)
+    while stop_prediction == False and continous_detection == True:
         print("Continuous Recording iterating")
-        r.record(window, lambda: stop)
+        r.record(window, lambda: stop_prediction)
 
 
 def single_detect(window, r):
     predicting(True)
-    r.record(window, lambda: stop)
+    r.record(window, lambda: stop_prediction)
     predicting(False)
 
 
@@ -162,7 +165,7 @@ def main():
                     print("Playback")
                     predicting(False)
                     play_thread = threading.Thread(
-                        target=r.play, args=(lambda: stop,))
+                        target=r.play, args=())
                     play_thread.start()
 
             elif 747 < y < 843 and 1311 < x < 1564:
