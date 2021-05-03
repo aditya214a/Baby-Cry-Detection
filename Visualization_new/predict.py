@@ -6,7 +6,7 @@
 # warnings.filterwarnings('ignore')
 # from tensorflow.keras.models import load_model 
 # import pickle
-
+from random import randint
 class Predict:
     def __init__(self):
         pass
@@ -65,7 +65,7 @@ class Predict:
         #     print('Cry')
         # else:
         #     print('No cry')
-        ynew = 1
+        ynew = randint(0,1)
         window.cry_toggle(ynew)
         # window['output'].update(value = ynew, visible = True)
 

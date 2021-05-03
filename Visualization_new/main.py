@@ -13,6 +13,24 @@ stop = False
 pred_text_id = None
 
 
+def predicting_ring_animation(draw):
+    global stop
+    frames = [('0.png', 2), ('2.png', 9), ('11.png', 4), ('15.png', 6),
+              ('21.png', 4), ('25.png', 6), ('31.png',
+                                             4), ('35.png', 7), ('42.png', 3),
+              ('45.png', 6), ('51.png', 4), ('55.png',
+                                             6), ('61.png', 4), ('65.png', 7),
+              ('72.png', 3), ('75.png', 6), ('81.png', 4), ('85.png', 10), ]
+    while True:
+        for i in frames:
+            predicting_ring_id = draw.DrawImage(
+                filename="images\\UI_V2_1080p\\predicting_ring\\"+str(i[0]), location=(1283, 114))
+            time.sleep(0.02*i[1])
+            draw.DeleteFigure(predicting_ring_id)
+        if stop == True:
+            break
+
+
 def cry_toggle(cry=None):
     """
         Display the picture on the left side of the screen for the predicted result.
@@ -29,7 +47,7 @@ def cry_toggle(cry=None):
 
 
 def predicting(pred=True, cont_detec=False):
-    global pred_text_id, continous_detection
+    global pred_text_id, continous_detection,stop
     stop = not pred
     continous_detection = (cont_detec and pred)
     print("F=predicting: continous_detection: ", continous_detection)
@@ -63,6 +81,14 @@ def make_window():
     draw = window['Graph']
     id = draw.DrawImage(
         filename=r'images\UI_V2_1080p\Waiting.png', location=(0, 0))
+    # arc_id = draw.draw_arc(top_left=(1283,114),
+    #             bottom_right=(1596,427),
+    #             extent=90,
+    #             start_angle=0,
+    #             style = 'last',
+    #             arc_color = "blue",
+    #             line_width = 15,
+    #             fill_color = 'green')
     window.Maximize()
     window.bind("<Escape>", "-ESCAPE-")
     window.Finalize()
@@ -84,15 +110,16 @@ def continous_detect(window, r):
         r.record(window, lambda: stop)
 
 
-def single_detect(window,r):
+def single_detect(window, r):
     predicting(True)
     r.record(window, lambda: stop)
     predicting(False)
-    
+
 
 def main():
     predicting(False)
     window, draw = make_window()
+
     print("Window Ready!!!")
     r = Record()
     while True:
@@ -101,8 +128,8 @@ def main():
         if event in (sg.WIN_CLOSED, 'Exit', '-ESCAPE-'):
             print('============ Event = ', event, ' ==============')
             print('-------- Values Dictionary (key=value) --------')
-            for key in values:
-                print(key, ' = ', values[key])
+            # for key in values:
+            #     print(key, ' = ', values[key])
             r.close()
             break
 
@@ -113,13 +140,20 @@ def main():
             if 500 < y < 670:
                 if 1060 < x < 1215:
                     print("Predicting: Single detection")
-                    sd = threading.Thread(target=single_detect, args=(window, r))
+                    sd = threading.Thread(
+                        target=single_detect, args=(window, r))
+                    p = threading.Thread(
+                        target=predicting_ring_animation, args=(draw, ))
+                    p.start()
                     sd.start()
                 elif 1215 < x < 1440:
                     print("Predicting: Continuous detection")
                     cd = threading.Thread(
                         target=continous_detect, args=(window, r,))
                     cd.start()
+                    p = threading.Thread(
+                        target=predicting_ring_animation, args=(draw, ))
+                    p.start()
                 elif 1440 < x < 1645:
                     predicting(False)
                     print("Stop recording")
