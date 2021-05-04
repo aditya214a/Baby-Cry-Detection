@@ -17,12 +17,28 @@ def predicting_ring_animation(draw):
     global stop_prediction
     predicting_ring_id = [None, None]
     pr_id = 0
-    frames = [('0.png', 2), ('2.png', 9), ('11.png', 4), ('15.png', 6), ('21.png', 4), ('25.png', 6), ('31.png', 4), ('35.png', 7), ('42.png', 3),
-              ('45.png', 6), ('51.png', 4), ('55.png', 6), ('61.png', 4), ('65.png', 7), ('72.png', 3), ('75.png', 6), ('81.png', 4), ('85.png', 10), ]
+    frames = [(images.pred_ring_0, 2),
+                (images.pred_ring_1, 9),
+                (images.pred_ring_2, 4),
+                (images.pred_ring_3, 6),
+                (images.pred_ring_4, 4),
+                (images.pred_ring_5, 6),
+                (images.pred_ring_6, 4),
+                (images.pred_ring_7, 7),
+                (images.pred_ring_8, 3),
+                (images.pred_ring_9, 6),
+                (images.pred_ring_10, 4),
+                (images.pred_ring_11, 6),
+                (images.pred_ring_12, 4),
+                (images.pred_ring_13, 7),
+                (images.pred_ring_14, 3),
+                (images.pred_ring_15, 6),
+                (images.pred_ring_16, 4),
+                (images.pred_ring_17, 10),]
     while True:
         for i in frames:
             predicting_ring_id[pr_id] = draw.DrawImage(
-                filename="images\\UI_V2_1080p\\predicting_ring\\"+str(i[0]), location=(1283, 114))
+                data=i[0], location=(1283, 114))
             time.sleep(0.02*i[1])
             pr_id = int(not pr_id)
             draw.DeleteFigure(predicting_ring_id[pr_id])
@@ -43,10 +59,10 @@ def cry_toggle(cry=None):
         draw.DeleteFigure(i)
     if cry == 1:
         cry_ids[1] = draw.DrawImage(
-            filename=r'images\UI_V2_1080p\calm_ui.png', location=(260, 260))
+            data=images.calm_ui, location=(260, 260))
     elif cry == 0:
         cry_ids[0] = draw.DrawImage(
-            filename=r'images\UI_V2_1080p\cry_ui.png', location=(260, 260))
+            data=images.cry_ui, location=(260, 260))
 
 
 def predicting(pred=True, cont_detec=False):
@@ -56,7 +72,7 @@ def predicting(pred=True, cont_detec=False):
     print("F=predicting: continous_detection: ", continous_detection)
     if pred_text_id == None and stop_prediction == False:
         pred_text_id = draw.DrawImage(
-            filename=r'images\UI_V2_1080p\predicting.png', location=(1360, 250))
+            data=images.predicting, location=(1360, 250))
     elif not pred_text_id == None and stop_prediction == True:
         draw.DeleteFigure(pred_text_id)
         pred_text_id = None
@@ -77,13 +93,13 @@ def make_window():
                        auto_size_buttons=False,
                        default_button_element_size=(20, 2),
                        # grab_anywhere=True,
-                       no_titlebar = True,
+                       no_titlebar=True,
                        # auto_close_duration = 600,
                        margins=(0, 0),
                        element_padding=(0, 0),).Finalize()
     draw = window['Graph']
     id = draw.DrawImage(
-        filename=r'images\UI_V2_1080p\Waiting.png', location=(0, 0))
+        data=images.Waiting, location=(0, 0))
     # arc_id = draw.draw_arc(top_left=(1283,114),
     #             bottom_right=(1596,427),
     #             extent=90,
@@ -107,7 +123,8 @@ def reset_all():
 
 def continous_detect(window, r):
     predicting(True, True)
-    print("stop_prediction: ", stop_prediction, "; continous_detection: ", continous_detection)
+    print("stop_prediction: ", stop_prediction,
+          "; continous_detection: ", continous_detection)
     while stop_prediction == False and continous_detection == True:
         print("Continuous Recording iterating")
         r.record(window, lambda: stop_prediction)
