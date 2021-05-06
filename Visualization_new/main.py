@@ -77,21 +77,13 @@ def make_window():
                        auto_size_buttons=False,
                        default_button_element_size=(20, 2),
                        # grab_anywhere=True,
-                       no_titlebar = True,
+                       no_titlebar=True,
                        # auto_close_duration = 600,
                        margins=(0, 0),
                        element_padding=(0, 0),).Finalize()
     draw = window['Graph']
     id = draw.DrawImage(
         filename=r'images\UI_V2_1080p\Waiting.png', location=(0, 0))
-    # arc_id = draw.draw_arc(top_left=(1283,114),
-    #             bottom_right=(1596,427),
-    #             extent=90,
-    #             start_angle=0,
-    #             style = 'last',
-    #             arc_color = "blue",
-    #             line_width = 15,
-    #             fill_color = 'green')
     window.Maximize()
     window.bind("<Escape>", "-ESCAPE-")
     window.Finalize()
@@ -107,15 +99,22 @@ def reset_all():
 
 def continous_detect(window, r):
     predicting(True, True)
-    print("stop_prediction: ", stop_prediction, "; continous_detection: ", continous_detection)
+    print("stop_prediction: ", stop_prediction,
+          "; continous_detection: ", continous_detection)
+    stop_button_enabled_id = draw.DrawImage(
+        filename=r'images\UI_V2_1080p\stop_button_enabled.png', location=(1440, 500))
     while stop_prediction == False and continous_detection == True:
         print("Continuous Recording iterating")
         r.record(window, lambda: stop_prediction)
+    draw.DeleteFigure(stop_button_enabled_id)
 
 
 def single_detect(window, r):
     predicting(True)
+    stop_button_enabled_id = draw.DrawImage(
+        filename=r'images\UI_V2_1080p\stop_button_enabled.png', location=(1440, 500))
     r.record(window, lambda: stop_prediction)
+    draw.DeleteFigure(stop_button_enabled_id)
     predicting(False)
 
 

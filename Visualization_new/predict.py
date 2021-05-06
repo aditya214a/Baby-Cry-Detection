@@ -4,7 +4,7 @@
 # import matplotlib.pyplot as plt
 # import warnings
 # warnings.filterwarnings('ignore')
-# from tensorflow.keras.models import load_model 
+# from tensorflow.keras.models import load_model
 # import pickle
 from random import randint
 class Predict:
