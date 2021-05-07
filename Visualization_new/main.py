@@ -17,12 +17,30 @@ def predicting_ring_animation(draw):
     global stop_prediction
     predicting_ring_id = [None, None]
     pr_id = 0
-    frames = [('0.png', 2), ('2.png', 9), ('11.png', 4), ('15.png', 6), ('21.png', 4), ('25.png', 6), ('31.png', 4), ('35.png', 7), ('42.png', 3),
-              ('45.png', 6), ('51.png', 4), ('55.png', 6), ('61.png', 4), ('65.png', 7), ('72.png', 3), ('75.png', 6), ('81.png', 4), ('85.png', 10), ]
+    frames = [
+        (images.predicting_ring_0, 2),
+        (images.predicting_ring_2, 6),
+        (images.predicting_ring_11, 9),
+        (images.predicting_ring_15, 4),
+        (images.predicting_ring_21, 4),
+        (images.predicting_ring_25, 6),
+        (images.predicting_ring_31, 4),
+        (images.predicting_ring_35, 7),
+        (images.predicting_ring_42, 3),
+        (images.predicting_ring_45, 6),
+        (images.predicting_ring_51, 4),
+        (images.predicting_ring_55, 6),
+        (images.predicting_ring_61, 4),
+        (images.predicting_ring_65, 7),
+        (images.predicting_ring_72, 3),
+        (images.predicting_ring_75, 6),
+        (images.predicting_ring_81, 4),
+        (images.predicting_ring_85, 10),
+    ]
     while True:
         for i in frames:
             predicting_ring_id[pr_id] = draw.DrawImage(
-                filename="images\\UI_V2_1080p\\predicting_ring\\"+str(i[0]), location=(1283, 114))
+                data=i[0], location=(1283, 114))
             time.sleep(0.02*i[1])
             pr_id = int(not pr_id)
             draw.DeleteFigure(predicting_ring_id[pr_id])
@@ -43,10 +61,9 @@ def cry_toggle(cry=None):
         draw.DeleteFigure(i)
     if cry == 1:
         cry_ids[1] = draw.DrawImage(
-            filename=r'images\UI_V2_1080p\calm_ui.png', location=(260, 260))
+            data=images.calm_ui, location=(260, 260))
     elif cry == 0:
-        cry_ids[0] = draw.DrawImage(
-            filename=r'images\UI_V2_1080p\cry_ui.png', location=(260, 260))
+        cry_ids[0] = draw.DrawImage(data=images.cry_ui, location=(260, 260))
 
 
 def predicting(pred=True, cont_detec=False):
@@ -56,7 +73,7 @@ def predicting(pred=True, cont_detec=False):
     print("F=predicting: continous_detection: ", continous_detection)
     if pred_text_id == None and stop_prediction == False:
         pred_text_id = draw.DrawImage(
-            filename=r'images\UI_V2_1080p\predicting.png', location=(1360, 250))
+            data=images.predicting, location=(1360, 250))
     elif not pred_text_id == None and stop_prediction == True:
         draw.DeleteFigure(pred_text_id)
         pred_text_id = None
@@ -82,8 +99,7 @@ def make_window():
                        margins=(0, 0),
                        element_padding=(0, 0),).Finalize()
     draw = window['Graph']
-    id = draw.DrawImage(
-        filename=r'images\UI_V2_1080p\Waiting.png', location=(0, 0))
+    id = draw.DrawImage(data=images.Waiting, location=(0, 0))
     window.Maximize()
     window.bind("<Escape>", "-ESCAPE-")
     window.Finalize()
