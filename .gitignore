@@ -15,4 +15,13 @@ __pycache__/
 
 Visualization/test.py
 output.wav
+output0.wav
+output1.wav
+output2.wav
+output3.wav
+predict.csv
+output0.csv
+output1.csv
+output2.csv
+output3.csv
 temp_folder/
