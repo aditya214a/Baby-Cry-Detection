@@ -113,8 +113,7 @@ def reset_all():
     cry_toggle()
 
 
-def continous_detect(window, r):
-    global draw
+def continous_detect(window, draw, r):
     predicting(True, True)
     print("stop_prediction: ", stop_prediction,
           "; continous_detection: ", continous_detection)
@@ -126,10 +125,9 @@ def continous_detect(window, r):
     draw.DeleteFigure(stop_button_enabled_id)
 
 
-def single_detect(window, r):
+def single_detect(window, draw, r):
     predicting(True)
-    stop_button_enabled_id = draw.DrawImage(
-        filename=r'images\UI_V2_1080p\stop_button_enabled.png', location=(1440, 500))
+    stop_button_enabled_id = draw.DrawImage(data = images.stop_button_enabled, location=(1440, 500))
     r.record(window, lambda: stop_prediction)
     draw.DeleteFigure(stop_button_enabled_id)
     predicting(False)
@@ -160,7 +158,7 @@ def main():
                 if 1060 < x < 1215:
                     print("Predicting: Single detection")
                     sd = threading.Thread(
-                        target=single_detect, args=(window, r))
+                        target=single_detect, args=(window, draw, r))
                     p = threading.Thread(
                         target=predicting_ring_animation, args=(draw, ))
                     p.start()
@@ -168,7 +166,7 @@ def main():
                 elif 1215 < x < 1440:
                     print("Predicting: Continuous detection")
                     cd = threading.Thread(
-                        target=continous_detect, args=(window, r, ))
+                        target=continous_detect, args=(window, draw, r, ))
                     cd.start()
                     p = threading.Thread(
                         target=predicting_ring_animation, args=(draw, ))

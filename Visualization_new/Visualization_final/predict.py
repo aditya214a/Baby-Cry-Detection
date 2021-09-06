@@ -35,5 +35,5 @@ class Predict:
         #     y=0
         # else:
         #     y=1
-        y=1 #
+        y=0 #
         window.cry_toggle(y)
