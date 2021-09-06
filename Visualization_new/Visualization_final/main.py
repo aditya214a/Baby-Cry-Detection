@@ -114,11 +114,12 @@ def reset_all():
 
 
 def continous_detect(window, r):
+    global draw
     predicting(True, True)
     print("stop_prediction: ", stop_prediction,
           "; continous_detection: ", continous_detection)
     stop_button_enabled_id = draw.DrawImage(
-        filename=r'images\UI_V2_1080p\stop_button_enabled.png', location=(1440, 500))
+        data = images.stop_button_enabled, location=(1440, 500))
     while stop_prediction == False and continous_detection == True:
         print("Continuous Recording iterating")
         r.record(window, lambda: stop_prediction)
@@ -167,7 +168,7 @@ def main():
                 elif 1215 < x < 1440:
                     print("Predicting: Continuous detection")
                     cd = threading.Thread(
-                        target=continous_detect, args=(window, r,))
+                        target=continous_detect, args=(window, r, ))
                     cd.start()
                     p = threading.Thread(
                         target=predicting_ring_animation, args=(draw, ))
